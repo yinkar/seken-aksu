@@ -32,12 +32,7 @@ let distance = 0;
 
 const positions = [];
 
-let start = false;
-
 function setup() {
-    if (window.innerHeight < window.innerWidth) {
-        start = true
-    }
   [game.width, game.height] = [windowWidth, windowHeight];
   
   // Create a canvas by using game settings
@@ -55,14 +50,6 @@ function setup() {
 }
 
 function draw() {
-    if (!start) {
-        background(0);
-        fill(255);
-        stroke(255);
-        textSize(25);
-        text(`Telefonu yan çevirip sayfayı yenile`, 100, 100);
-        return;
-    }
 
   // Set canvas background as black
   background(0);
