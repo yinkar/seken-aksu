@@ -15,7 +15,9 @@ let player = {
   speed: null,
   size: null,
   visualSize: null,
-  moving: false
+  moving: false,
+  sprites: [],
+  angle: 0
 };
 
 // Gravity constant
@@ -31,6 +33,14 @@ let previousPosition = null;
 let distance = 0;
 
 const positions = [];
+
+let backgroundImage = null;
+
+function preload() {
+  player.sprites.push(loadImage('ball.png'));
+  
+  backgroundImage = loadImage('wall.png');
+}
 
 function setup() {
   [game.width, game.height] = [windowWidth, windowHeight];
@@ -52,11 +62,23 @@ function setup() {
 function draw() {
 
   // Set canvas background as black
-  background(0);
+  background(100);
+  
+  for (let i = 0; i < game.height; i += 64) {
+    for (let j = 0; j < game.width; j += 64) {
+      image(backgroundImage, j, i);
+    }
+  }
+  
+  fill(55);
+  noStroke();
+  rect(0, height - 75, game.width, 75);
 
   // Add player speed to player x position
   player.position.x += player.speed.x;
-
+  
+  
+  player.angle += player.speed.x * 0.05;
   
   if (mouseX > player.position.x - player.size.x &&
     mouseX < player.position.x + player.size.x &&
@@ -181,7 +203,6 @@ function draw() {
     e.x += e.dx;
     e.y += e.dy;
     
-    
     e.dy += gravity * 0.7;
 
     // Decrease size
@@ -201,17 +222,41 @@ function draw() {
 
   previousPosition = player.position.copy();
 
-  // Fill for ball
-  fill(255);
-
-  // Draw an ellipse to player
-  ellipse(player.position.x, player.position.y - 2 + abs(player.speed.y / 2), player.visualSize.x, player.visualSize.y);
-
+  fill(30, 30, 30, constrain(player.position.y * 0.2, 0, 255));
+  noStroke();
+  push();
+  translate(player.position.x, game.height - 2);
+  ellipse(game.height - 5 - player.position.y, 0, 0.9 * player.visualSize.x * (player.position.y / game.height), 0.7 * player.visualSize.y * 0.5 * (player.position.y / game.height));
+  pop();
+  
+  // Draw player
+  push();
+  translate(player.position.x, player.position.y - 2 + abs(player.speed.y / 2));
+  rotate(player.angle);
+  fill('#aa4400ff');
+  ellipse(0, 0, player.visualSize.x, player.visualSize.y);
+  pop();
+  
+  push();
+  translate(player.position.x - 7, player.position.y - 7 - 2 + abs(player.speed.y / 2));
+  for (let i = 0.2; i < 1.0; i += 0.1) {
+    fill(255, 136, 56, 30 * i);
+    rotate(player.angle);
+    ellipse(0, 0, player.visualSize.x * 0.6 * i, player.visualSize.y * 0.6 * i);
+  }
+  pop();
+  
+  push();
+  translate(player.position.x, player.position.y - 2 + abs(player.speed.y / 2));
+  rotate(player.angle);
+  image(player.sprites[0], - player.visualSize.x / 2, - player.visualSize.y / 2, player.visualSize.x, player.visualSize.y);
+  pop();
+  
   // FPS
   let fps = frameRate();
-  fill(175);
+  fill(200);
   stroke(100);
-  text(`FPS: ${fps.toFixed(2)}`, 10, 20);
+  text(`FPS: ${Math.floor(fps)}`, 10, 20);
 
   text(`Distance: ${distance.toFixed(2)}`, 10, 35);
 }
@@ -307,7 +352,7 @@ function touchEnded() {
 function generateDust(x, y, dx1, dx2, dy1, dy2) {
 
   // Set dust amount by player's speed
-  let dustAmount = min(75, abs(floor(0.7 * player.speed.y)));
+  let dustAmount = min(75, abs(floor(0.7 * player.speed.y)) * 5);
 
   for (i = 0; i < dustAmount; i++) {
     // Add dust with random values to array to use in game
@@ -317,7 +362,7 @@ function generateDust(x, y, dx1, dx2, dy1, dy2) {
       dx: random(dx1, dx2),
       dy: random(dy1, dy2),
       size: random(1, 7),
-      color: random(0, 255)
+      color: random(30, 100)
     });
 
     // Remove particle after a random time
@@ -325,4 +370,10 @@ function generateDust(x, y, dx1, dx2, dy1, dy2) {
       dust.pop();
     }, random(0, 500));
   }
+}
+
+function windowResized() {
+  [game.width, game.height] = [windowWidth, windowHeight];
+  
+  resizeCanvas(game.width, game.height);
 }
