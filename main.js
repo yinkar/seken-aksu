@@ -72,7 +72,7 @@ function draw() {
   
   fill(55);
   noStroke();
-  rect(0, height - 75, game.width, 75);
+  rect(0, game.height - 75, game.width, 75);
 
   // Add player speed to player x position
   player.position.x += player.speed.x;
@@ -105,14 +105,14 @@ function draw() {
     if (mouseX > 0 &&
       mouseX < width &&
       mouseY > 0 &&
-      mouseY < height) {
+      mouseY < game.height) {
       player.position.x = mouseX;
       player.position.y = mouseY;
     }
   } else {
 
     // If player is in air
-    if (player.position.y + player.size.y / 2 + player.speed.y < height) {
+    if (player.position.y + player.size.y / 2 + player.speed.y < game.height) {
 
       // Add gravity to player's vertical speed
       player.speed.y += gravity;
@@ -138,7 +138,7 @@ function draw() {
         player.speed.y *= -0.75;
 
         // Make dust particle effect with custom function
-        generateDust(player.position.x, height, -10, 10, -10, 0);
+        generateDust(player.position.x, game.height, -10, 10, -10, 0);
 
         // Vertical squeezing effect
         player.visualSize.x *= 1.2;
@@ -266,7 +266,7 @@ function keyPressed() {
   if (key === ' ') {
 
     // If player is on the floor
-    if (player.position.y + player.size.y / 2 + 1 > height) {
+    if (player.position.y + player.size.y / 2 + 1 > game.height) {
 
       // Set vertical speed suddenly
       player.speed.y = 30;
@@ -373,6 +373,9 @@ function generateDust(x, y, dx1, dx2, dy1, dy2) {
 }
 
 function windowResized() {
+  player.position.x = constrain(player.position.x, 0, windowWidth - 100);
+  player.position.y = constrain(player.position.y, 0, windowHeight - 100);
+
   [game.width, game.height] = [windowWidth, windowHeight];
   
   resizeCanvas(game.width, game.height);
