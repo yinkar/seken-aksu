@@ -36,10 +36,18 @@ const positions = [];
 
 let backgroundImage = null;
 
+let boing;
+
+let overlay;
+
 function preload() {
   player.sprites.push(loadImage('ball.png'));
   
   backgroundImage = loadImage('wall.png');
+  
+  boing = loadSound('boing.mp3');
+  
+  overlay = loadImage('overlay.png');
 }
 
 function setup() {
@@ -73,6 +81,9 @@ function draw() {
   fill(55);
   noStroke();
   rect(0, game.height - 75, game.width, 75);
+  
+  fill(58);
+  rect(0, game.height - 80, game.width, 5);
 
   // Add player speed to player x position
   player.position.x += player.speed.x;
@@ -136,6 +147,8 @@ function draw() {
 
         // Reverse and decrease ball's vertical speed, in other words bounce the ball
         player.speed.y *= -0.75;
+      
+        boing.play();
 
         // Make dust particle effect with custom function
         generateDust(player.position.x, game.height, -10, 10, -10, 0);
@@ -162,6 +175,8 @@ function draw() {
 
       // Reverse the speed
       player.speed.y *= -1;
+      
+      boing.play();
 
       // Make dust particle effect with custom function
       generateDust(player.position.x, 0, -10, 10, 0, 10);
@@ -183,6 +198,8 @@ function draw() {
 
       // Reverse and decrease the horizontal speed
       player.speed.x *= -0.8;
+      
+      boing.play();
 
       // Horizontal squeezing effect
       player.visualSize.x *= 0.8;
@@ -234,7 +251,7 @@ function draw() {
   translate(player.position.x, player.position.y - 2 + abs(player.speed.y / 2));
   rotate(player.angle);
   fill('#aa4400ff');
-  ellipse(0, 0, player.visualSize.x, player.visualSize.y);
+  ellipse(0.05, 0.05, player.visualSize.x - 0.05, player.visualSize.y - 0.05);
   pop();
   
   push();
@@ -251,6 +268,8 @@ function draw() {
   rotate(player.angle);
   image(player.sprites[0], - player.visualSize.x / 2, - player.visualSize.y / 2, player.visualSize.x, player.visualSize.y);
   pop();
+  
+  image(overlay, player.position.x - 4950, player.position.y - 5150, 10000, 10000);
   
   // FPS
   let fps = frameRate();
